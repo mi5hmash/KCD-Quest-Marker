@@ -1,0 +1,42 @@
+/*Custom font*/
+@font-face{
+    font-family: 'ChampFleuryPro1529';
+    src: url("./3rdparty/fonts/1529ChampFleuryPro.woff2") format("woff2"),
+    url("./3rdparty/fonts/1529ChampFleuryPro.woff") format("woff");
+}
+
+html, body {
+    font-family: Arial, sans-serif;
+}
+
+header {
+    border-radius: 0 0 8px 8px;
+}
+
+main {
+    margin-bottom: 80px;
+}
+
+.ibutton {
+    width: 45px;
+}
+
+.kcd-font {
+    font-family: 'ChampFleuryPro1529' !important;
+}
+
+.preview-demo {
+    background-color: var(--bs-tertiary-bg) !important;
+    background-image: radial-gradient(circle, var(--bs-border-color) 1px, rgba(0,0,0,0) 1px);
+    background-size: 1rem 1rem;
+}
+
+.table-container {
+    max-height: 250px;
+    overflow-y: auto;
+}
+
+    .table-container table thead {
+        position: sticky; 
+        top: 0;
+    }
