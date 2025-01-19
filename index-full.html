@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>KCD Quest Marker</title>
+		<!-- Favicon -->
+		<link rel="icon" type="image/x-icon" href="favicon.ico" />
+		<!-- Theme Manager (toggle theme without flickering) -->
+		<script src="./js/themeManager.min.js?v=20250507_2"></script>
+		<!-- Bootstrap CSS -->
+		<link rel="stylesheet" href="./css/3rdparty/bootstrap/bootstrap.min.css?r=5.3.6&v=20250507_2">
+		<!-- Bootstrap Icons CSS -->
+		<link rel="stylesheet" href="./css/3rdparty/bootstrap/bootstrap-icons.min.css?r=v1.12.1&v=20250507_2">
+		<!-- App CSS -->
+		<link rel="stylesheet" href="./css/app.min.css?v=20250507_2">
+		<!-- JSzip JS -->
+		<script src="./js/3rdparty/jszip.min.js?r=3.10.1&v=20250507_2"></script>
+		<!-- WebStorageManager JS -->
+		<script type="module" src="./js/webStorageManager.min.js?v=20250507_2"></script>
+		<!-- PakPatcher JS -->
+		<script type="module" src="./js/pakPatcher.min.js?v=20250507_2"></script>
+	</head>
+	<body>
+		<!-- HEADER -->
+		<header class="navbar navbar-expand-lg sticky-top bg-primary mb-3">
+			<div class="container-xxl">
+				<!-- LOGO & TITLE -->
+				<span>
+					<a class="navbar-brand kcd-font text-light" href="/KCD-Quest-Marker/">
+						[†] KCD Quest Marker 
+					</a>
+				</span>
+				<div class="d-flex justify-content-start">
+					<!-- THEME SWITCHER -->
+					<button type="button" id="themeSwitcher" title="Toggle theme" class="btn btn-link text-light">
+						<i class="bi bi-circle-half"></i>
+					</button>
+				</div>
+			</div>
+		</header>
+		<!-- MAIN -->
+		<main>
+			<div class="container-xxl">
+				<div class="row g-3">
+					<div class="col-md-12">
+						<h4>Select the '*_xml.pak' files</h4>
+						<label for="pakInput" class="form-label">They are located in the 'KingdomComeDeliverance\Localization\' directory</label>
+						<div class="input-group">
+							<input type="file" id="pakInput" class="form-control" accept=".pak" multiple/>
+							<button class="btn btn-primary" onclick="prepareMod()" type="button" id="runButton" disabled>Run</button>
+						</div>
+					</div>
+					<div class="col-md-12">
+						<div id="repackStatus" class="alert alert-primary mb-0" role="alert">
+							<div class="spinner-border spinner-border-sm collapse" role="status"></div>
+							<span>After selecting the files, review the settings below or simply press the 'Run' button.</span>
+						</div>
+					</div>
+					<!-- ACCORDION 1 -->
+					<div class="col-md-12">
+						<div class="accordion">
+							<div class="accordion-item">
+								<h2 class="accordion-header">
+									<button class="accordion-button fs-4 fw-bold collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+										Quest config
+									</button>
+								</h2>
+								<div id="collapseOne" class="accordion-collapse collapse">
+									<div class="accordion-body">
+										<div class="row g-3 align-items-end">
+											<div class="col-md-12">
+												<label for="fieldPreview" class="form-label">Preview</label>
+												<input type="text" class="form-control preview-demo fs-1 text-center kcd-font" id="fieldPreview" disabled readonly>
+											</div>
+											<div class="col-md-4">
+												<label for="fieldQuestIndicator" class="form-label">Quest indicator</label>
+												<input type="text" class="form-control" id="fieldQuestIndicator" oninput="updateQuestIndicatorField()" maxlength="10">
+											</div>
+											<div class="col-md-8">
+												<button type="button" title="Insert character" onclick="insertCharacter(this)" class="btn btn-secondary me-2 mt-1 ibutton kcd-font">
+													†
+												</button>
+												<button type="button" title="Insert character" onclick="insertCharacter(this)" class="btn btn-secondary me-2 mt-1 ibutton kcd-font">
+													‡
+												</button>
+												<button type="button" title="Insert character" onclick="insertCharacter(this)" class="btn btn-secondary me-2 mt-1 ibutton kcd-font">
+													*
+												</button>
+												<button type="button" title="Insert character" onclick="insertCharacter(this)" class="btn btn-secondary me-2 mt-1 ibutton kcd-font">
+													&#123;
+												</button>
+												<button type="button" title="Insert character" onclick="insertCharacter(this)" class="btn btn-secondary me-2 mt-1 ibutton kcd-font">
+													&#125;
+												</button>
+											</div>
+											<div class="col-md-12">
+												<label for="fieldQuestList" class="form-label">View all Quest IDs</label>
+												<div class="card">
+													<div class="card-header">
+														<div class="d-flex">
+															<button type="button" id="loadQuestIDsFromFirstFile" onclick="getQuestIDsFromFirstFile()" class="btn btn-primary flex-grow-1" disabled>
+																<i class="bi bi-box-arrow-down"></i>&nbsp;Load Quest IDs from the first file
+															</button>
+															<button type="button" aria-label="Copy to clipboard" onclick="copyTableToClipboard(this, 'questTable')" class="btn btn-secondary ms-3" data-bs-toggle="popover" data-bs-placement="top" data-bs-trigger="hover" data-bs-content="Copy to clipboard">
+																<i class="bi bi-clipboard"></i>
+															</button>
+														</div>
+													</div>
+													<div class="card-body">
+														<div class="table-container">
+															<table class="table table-hover" id="questTable">
+																<thead>
+																	<tr>
+																		<th>#</th>
+																		<th>Quest name</th>
+																		<th>Quest ID</th>
+																	</tr>
+																</thead>
+																<tbody></tbody>
+															</table>
+														</div>
+													</div>
+												</div>
+											</div>
+											<div class="col-md-12">
+												<label for="fieldMarkedQuestList" class="form-label">Quest IDs to mark (separated by commas)</label>
+												<textarea class="form-control" id="fieldMarkedQuestList" rows="5"></textarea>
+											</div>
+											<div class="col-md-6">
+												<button type="button" onclick="saveQuestConfig()" class="btn btn-primary col-12">
+													<i class="bi bi-floppy"></i>&nbsp;Save config
+												</button>
+											</div>
+											<div class="col-md-6">
+												<button type="button" onclick="deleteQuestConfig()" class="btn btn-outline-danger col-12">
+													<i class="bi bi-trash3-fill"></i>&nbsp;Restore default config
+												</button>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<!-- ACCORDION 2 -->
+					<div class="col-md-12">
+						<div class="accordion">
+							<div class="accordion-item">
+								<h2 class="accordion-header">
+									<button class="accordion-button fs-4 fw-bold collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
+										Manifest settings
+									</button>
+								</h2>
+								<div id="collapseTwo" class="accordion-collapse collapse">
+									<div class="accordion-body">
+										<div class="row g-3 align-items-end">
+											<div class="col-md-4">
+												<label for="fieldModName" class="form-label">Mod name</label>
+												<input type="text" class="form-control" id="fieldModName">
+											</div>
+											<div class="col-md-8">
+												<label for="fieldModDescription" class="form-label">Mod description</label>
+												<input type="text" class="form-control" id="fieldModDescription">
+											</div>
+											<div class="col-md-4">
+												<label for="fieldAuthor" class="form-label">Author</label>
+												<input type="text" class="form-control" id="fieldAuthor">
+											</div>
+											<div class="col-md-4">
+												<label for="fieldModVersion" class="form-label">Mod version</label>
+												<input type="text" class="form-control" id="fieldModVersion">
+											</div>
+											<div class="col-md-4">
+												<label for="fieldKCDVersion" class="form-label">KCD version</label>
+												<input type="text" class="form-control" id="fieldKCDVersion">
+											</div>
+											<div class="col-md-6">
+												<button type="button" onclick="saveManifestConfig()" class="btn btn-primary col-12">
+													<i class="bi bi-floppy"></i>&nbsp;Save settings
+												</button>
+											</div>
+											<div class="col-md-6">
+												<button type="button" onclick="deleteManifestConfig()" class="btn btn-outline-danger col-12">
+													<i class="bi bi-trash3-fill"></i>&nbsp;Restore default settings
+												</button>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</main>
+		<!-- FOOTER -->
+		<footer class="d-flex fixed-bottom bg-body-tertiary justify-content-center p-2">
+			<div class="row g-3">
+				<div class="col">
+					<span id="signature">© 2022 Mi5hmasH |</span><span>&nbsp;<a class="navbar-brand text-body-emphasis" target="_blank" rel="noopener" href="https://github.com/mi5hmash/KCD-Quest-Marker"><i class="bi bi-github"></i>&nbsp;GitHub</a></span>
+				</div>
+			</div>
+		</footer>
+		<!-- Year Update -->
+		<script>
+			document.addEventListener("DOMContentLoaded", () =>
+				document.getElementById("signature").textContent = `© ${new Date().getFullYear()} Mi5hmasH |`
+			);
+		</script>
+		<!-- Bootstrap Bundle JS -->
+		<script src="./js/3rdparty/bootstrap.bundle.min.js?r=5.3.6&v=20250507_2"></script>
+		<!-- App JS -->
+		<script src="./js/app.min.js?&v=20250507_2"></script>
+	</body>
+</html>
