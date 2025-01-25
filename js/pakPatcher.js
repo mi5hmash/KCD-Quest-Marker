@@ -44,8 +44,8 @@ function minifyXML(xmlString) {
     return xmlString.replace(/\s*(<[^>]+>)\s*/g, "$1").trim();
 }
 
-function removeAllSpaceCharacters(string) {
-    return string.replace(/\s/g, '');
+function sanitizeDirectoryName(name) {
+    return name.replace(/[\/\\:*<>?"|\s]/g, '');
 }
 
 function setStatus(text) {
@@ -263,7 +263,7 @@ function collectInputs(){
 }
 
 function fixManifestInputs() {
-    document.getElementById('fieldModName').value = removeAllSpaceCharacters(document.getElementById('fieldModName').value);
+    document.getElementById('fieldModName').value = sanitizeDirectoryName(document.getElementById('fieldModName').value);
 }
 
 window.updateQuestIndicatorField = () => {
@@ -470,6 +470,7 @@ function processXML(xmlString) {
 async function packZip(files) {
     // Pack PAK files
     const jszip = new JSZip();
+    const root = mapManifest.get('fieldModName');
     for (const file of files) {
         const jspak = new JSZip();
         jspak.file(getNewXmlFileName(), file.data);
@@ -480,11 +481,11 @@ async function packZip(files) {
                 level: 9
             }
         });
-        jszip.folder("Localization").file(file.name, pakUint8Array);
+        jszip.folder(`${root}/Localization`).file(file.name, pakUint8Array);
     }
     // Create manifest file and include it
     const manifest = createManifest();
-    jszip.file(manifest.name, manifest.data);
+    jszip.file(`${root}/${manifest.name}`, manifest.data);
 
     return await jszip.generateAsync({
         type: "blob",

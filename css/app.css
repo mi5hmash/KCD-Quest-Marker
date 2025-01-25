@@ -1,8 +1,8 @@
 /*Custom font*/
 @font-face{
     font-family: 'ChampFleuryPro1529';
-    src: url("./fonts/1529ChampFleuryPro.woff2") format("woff2"),
-    url("./fonts/1529ChampFleuryPro.woff") format("woff");
+    src: url("./3rdparty/fonts/1529ChampFleuryPro.woff2") format("woff2"),
+    url("./3rdparty/fonts/1529ChampFleuryPro.woff") format("woff");
 }
 
 html, body {
