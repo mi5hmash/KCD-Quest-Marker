@@ -401,3 +401,6 @@ FodyWeavers.xsd
 # JetBrains Rider
 *.sln.iml
 /.vscode
+
+# Thumbs.db files
+[Tt]humbs.db

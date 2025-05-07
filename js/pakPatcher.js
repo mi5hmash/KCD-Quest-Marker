@@ -136,9 +136,6 @@ function getMarkedQuestList() {
     return mapQuest.get("fieldMarkedQuestList").split(",");
 }
 
-// Magic Spell
-const magicSpell = ':voMX/.?>+U.f?%Al9%RQRwk!RzcA|Rn]q\\Oo&Vx';
-
 function mapToObject(map) {
     let obj = {};
     map.forEach((value, key) => {
@@ -157,84 +154,18 @@ function objectToMap(obj) {
     return map;
 }
 
-async function encryptData(data, key) {
-    let encoder = new TextEncoder();
-    let keyMaterial = await crypto.subtle.importKey(
-        "raw", encoder.encode(key), "PBKDF2", false, ["deriveKey"]
-    );
-    let salt = crypto.getRandomValues(new Uint8Array(16));
-    let derivedKey = await crypto.subtle.deriveKey(
-        {
-            "name": "PBKDF2",
-            "salt": salt,
-            "iterations": 100000,
-            "hash": "SHA-256"
-        },
-        keyMaterial,
-        {"name": "AES-GCM", "length": 256},
-        true,
-        ["encrypt"]
-    );
-    let iv = crypto.getRandomValues(new Uint8Array(12));
-    let encrypted = await crypto.subtle.encrypt(
-        {"name": "AES-GCM", iv},
-        derivedKey,
-        encoder.encode(data)
-    );
-    let encryptedDataArray = new Uint8Array(encrypted);
-    let encryptedData = new Uint8Array(iv.length + encryptedDataArray.length + salt.length);
-    let position = 0;
-    encryptedData.set(iv, position);
-    position += iv.length;
-    encryptedData.set(encryptedDataArray, position);
-    position += encryptedDataArray.length;
-    encryptedData.set(salt, position);
-    return encryptedData;
-}
-
-async function decryptData(data, key) {
-    let encoder = new TextEncoder();
-    let keyMaterial = await crypto.subtle.importKey(
-        "raw", encoder.encode(key), "PBKDF2", false, ["deriveKey"]
-    );
-    let iv = data.slice(0, 12);
-    let encrypted = data.slice(12, data.length - 16);
-    let salt = data.slice(data.length - 16, data.length);
-    let derivedKey = await crypto.subtle.deriveKey(
-        {
-            "name": "PBKDF2",
-            "salt": salt,
-            "iterations": 100000,
-            "hash": "SHA-256"
-        },
-        keyMaterial,
-        {"name": "AES-GCM", "length": 256},
-        true,
-        ["decrypt"]
-    );
-    let decrypted = await crypto.subtle.decrypt(
-        {"name": "AES-GCM", iv},
-        derivedKey,
-        encrypted
-    );
-    let decoder = new TextDecoder();
-    return decoder.decode(decrypted);
-}
-
 // Function that sets config in localStorage
 async function setConfig(map, name) {
     let obj = mapToObject(map);
     let data = JSON.stringify(obj);
-    let encryptedData = await encryptData(data, magicSpell);
-    localStorage.setItem(name, uint8ArrayToHexString(encryptedData));
+    await setEncryptedLocalStorageItem(name, data);
 }
 
 // Function that gets config from localStorage
 async function getConfig(name) {
-    let encryptedData = localStorage.getItem(name);
+    let encryptedData = await getEncryptedLocalStorageItem(name);
     if (encryptedData) {
-        let decryptedData = await decryptData(hexStringToUint8Array(encryptedData), magicSpell);
-        let obj = JSON.parse(decryptedData);
+        let obj = JSON.parse(encryptedData);
         return objectToMap(obj);
     }
     return null;
@@ -284,7 +215,7 @@ window.loadManifestConfig = async() => {
 }
 
 window.deleteManifestConfig = async() => {
-    localStorage.removeItem(MANIFEST_CONFIG_NAME);
+    removeLocalStorageItem(MANIFEST_CONFIG_NAME);
     mapManifest = mapManifest0;
     setInputs(mapManifest);
 }
@@ -302,7 +233,7 @@ window.loadQuestConfig = async() => {
 }
 
 window.deleteQuestConfig = async() => {
-    localStorage.removeItem(QUEST_CONFIG_NAME);
+    removeLocalStorageItem(QUEST_CONFIG_NAME);
     mapQuest = mapQuest0;
     setInputs(mapQuest);
     updateQuestIndicatorField();

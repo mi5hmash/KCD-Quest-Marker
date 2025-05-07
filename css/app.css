@@ -25,6 +25,12 @@ main {
     font-family: 'ChampFleuryPro1529' !important;
 }
 
+.preview-demo {
+    background-color: var(--bs-tertiary-bg) !important;
+    background-image: radial-gradient(circle, var(--bs-border-color) 1px, rgba(0,0,0,0) 1px);
+    background-size: 1rem 1rem;
+}
+
 .table-container {
     max-height: 250px;
     overflow-y: auto;

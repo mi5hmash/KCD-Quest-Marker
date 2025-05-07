@@ -7,17 +7,19 @@
 		<!-- Favicon -->
 		<link rel="icon" type="image/x-icon" href="favicon.ico" />
 		<!-- Theme Manager (toggle theme without flickering) -->
-		<script src="./js/themeManager.min.js?v=20250119_1"></script>
-		<!-- App CSS -->
-		<link rel="stylesheet" href="./css/app.min.css?v=20250119_1">
+		<script src="./js/themeManager.min.js?v=20250507_2"></script>
 		<!-- Bootstrap CSS -->
-		<link rel="stylesheet" href="./css/3rdparty/bootstrap/bootstrap.min.css?r=5.3.3&v=20250119_1">
+		<link rel="stylesheet" href="./css/3rdparty/bootstrap/bootstrap.min.css?r=5.3.6&v=20250507_2">
 		<!-- Bootstrap Icons CSS -->
-		<link rel="stylesheet" href="./css/3rdparty/bootstrap/bootstrap-icons.min.css?r=v1.11.3&v=20250119_1">
+		<link rel="stylesheet" href="./css/3rdparty/bootstrap/bootstrap-icons.min.css?r=v1.12.1&v=20250507_2">
+		<!-- App CSS -->
+		<link rel="stylesheet" href="./css/app.min.css?v=20250507_2">
 		<!-- JSzip JS -->
-		<script src="./js/3rdparty/jszip.min.js?r=3.10.1&v=20250119_1"></script>
+		<script src="./js/3rdparty/jszip.min.js?r=3.10.1&v=20250507_2"></script>
+		<!-- WebStorageManager JS -->
+		<script type="module" src="./js/webStorageManager.min.js?v=20250507_2"></script>
 		<!-- PakPatcher JS -->
-		<script type="module" src="./js/pakPatcher.min.js?v=20250119_1"></script>
+		<script type="module" src="./js/pakPatcher.min.js?v=20250507_2"></script>
 	</head>
 	<body>
 		<!-- HEADER -->
@@ -26,13 +28,15 @@
 				<!-- LOGO & TITLE -->
 				<span>
 					<a class="navbar-brand kcd-font text-light" href="/KCD-Quest-Marker/">
-						[†] Quest Marker for KCD
+						[†] KCD Quest Marker 
 					</a>
 				</span>
-				<!-- THEME SWITCHER -->
-				<button type="button" id="themeSwitcher" title="Toggle theme" class="btn btn-link text-light">
-					<i class="bi bi-circle-half"></i>
-				</button>
+				<div class="d-flex justify-content-start">
+					<!-- THEME SWITCHER -->
+					<button type="button" id="themeSwitcher" title="Toggle theme" class="btn btn-link text-light">
+						<i class="bi bi-circle-half"></i>
+					</button>
+				</div>
 			</div>
 		</header>
 		<!-- MAIN -->
@@ -50,7 +54,7 @@
 					<div class="col-md-12">
 						<div id="repackStatus" class="alert alert-primary mb-0" role="alert">
 							<div class="spinner-border spinner-border-sm collapse" role="status"></div>
-							<span>After uploading the files, review the settings below or simply press the 'Run' button.</span>
+							<span>After selecting the files, review the settings below or simply press the 'Run' button.</span>
 						</div>
 					</div>
 					<!-- ACCORDION 1 -->
@@ -58,16 +62,16 @@
 						<div class="accordion">
 							<div class="accordion-item">
 								<h2 class="accordion-header">
-									<button class="accordion-button fs-4 fw-bold collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
+									<button class="accordion-button fs-4 fw-bold collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
 										Quest config
 									</button>
 								</h2>
-								<div id="collapseTwo" class="accordion-collapse collapse">
+								<div id="collapseOne" class="accordion-collapse collapse">
 									<div class="accordion-body">
 										<div class="row g-3 align-items-end">
 											<div class="col-md-12">
 												<label for="fieldPreview" class="form-label">Preview</label>
-												<input type="text" class="form-control fs-1 text-center kcd-font" id="fieldPreview" disabled readonly>
+												<input type="text" class="form-control preview-demo fs-1 text-center kcd-font" id="fieldPreview" disabled readonly>
 											</div>
 											<div class="col-md-4">
 												<label for="fieldQuestIndicator" class="form-label">Quest indicator</label>
@@ -130,7 +134,7 @@
 											</div>
 											<div class="col-md-6">
 												<button type="button" onclick="deleteQuestConfig()" class="btn btn-outline-danger col-12">
-													<i class="bi bi-trash3-fill"></i>&nbsp;Delete saved config
+													<i class="bi bi-trash3-fill"></i>&nbsp;Restore default config
 												</button>
 											</div>
 										</div>
@@ -144,11 +148,11 @@
 						<div class="accordion">
 							<div class="accordion-item">
 								<h2 class="accordion-header">
-									<button class="accordion-button fs-4 fw-bold collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+									<button class="accordion-button fs-4 fw-bold collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
 										Manifest settings
 									</button>
 								</h2>
-								<div id="collapseOne" class="accordion-collapse collapse">
+								<div id="collapseTwo" class="accordion-collapse collapse">
 									<div class="accordion-body">
 										<div class="row g-3 align-items-end">
 											<div class="col-md-4">
@@ -178,7 +182,7 @@
 											</div>
 											<div class="col-md-6">
 												<button type="button" onclick="deleteManifestConfig()" class="btn btn-outline-danger col-12">
-													<i class="bi bi-trash3-fill"></i>&nbsp;Delete saved settings
+													<i class="bi bi-trash3-fill"></i>&nbsp;Restore default settings
 												</button>
 											</div>
 										</div>
@@ -194,19 +198,19 @@
 		<footer class="d-flex fixed-bottom bg-body-tertiary justify-content-center p-2">
 			<div class="row g-3">
 				<div class="col">
-					<span>
-						© 2025 Mi5hmasH |
-						<a class="navbar-brand text-body-emphasis" target="_blank" rel="noopener" href="https://github.com/mi5hmash/KCD-Quest-Marker">
-							<i class="bi bi-github"></i>&nbsp;GitHub
-						</a>
-					</span>
-				</div>
+					<span id="signature">© 2022 Mi5hmasH |</span><span>&nbsp;<a class="navbar-brand text-body-emphasis" target="_blank" rel="noopener" href="https://github.com/mi5hmash/KCD-Quest-Marker"><i class="bi bi-github"></i>&nbsp;GitHub</a></span>
 				</div>
 			</div>
 		</footer>
+		<!-- Year Update -->
+		<script>
+			document.addEventListener("DOMContentLoaded", () =>
+				document.getElementById("signature").textContent = `© ${new Date().getFullYear()} Mi5hmasH |`
+			);
+		</script>
 		<!-- Bootstrap Bundle JS -->
-		<script src="./js/3rdparty/bootstrap.bundle.min.js?r=5.3.3&v=20250119_1"></script>
+		<script src="./js/3rdparty/bootstrap.bundle.min.js?r=5.3.6&v=20250507_2"></script>
 		<!-- App JS -->
-		<script src="./js/app.min.js?&v=20250119_1"></script>
+		<script src="./js/app.min.js?&v=20250507_2"></script>
 	</body>
 </html>
